@@ -85,6 +85,7 @@ export default {
       // Urls para controlar la paginación
       next: '/product/?limit=5&offset=0',
       previous: null,
+      actual: '/product/?limit=5&offset=0',
 
       // Objeto que contiene el nombre de las columnas a mostrar
       visibleColumns: [ 'name', 'cant', 'categ', 'action'],
@@ -155,7 +156,7 @@ export default {
           .then(response => {
             Swal.fire('Producto creado', '', 'success')
             this.clean()
-            this.getProducts()
+            this.getProducts({pagination: this.pagination})
           })
           .catch(error => {
             Swal.fire('El producto no ha sido creado', error.response.data.error, 'error')
@@ -178,7 +179,7 @@ export default {
           .put(`/product/?categ=${this.categ_id}`, this.data)
           .then(response => {
             Swal.fire('Producto actualizado', '', 'success')
-            this.getProducts()
+            this.getProducts({pagination: this.pagination})
           })
           .catch(error => {
             Swal.fire('El producto no ha sido actualizado', error.response.data.error, 'error')
@@ -200,11 +201,14 @@ export default {
 
       // Si hay un nuevo limit, se concaneta este limit nuevo a la url
       if(rowsPerPage != this.pagination.rowsPerPage) {
-        path = `/product/?limit=${rowsPerPage}&offset=0`
+        path = `/category/?limit=${rowsPerPage}&offset=0`
       } else {
         // Si la página solicitada es una página anterior, se obtiene la url previa
         if(page < this.pagination.page) {
           path = this.previous
+        } else if(page === this.pagination.page){
+          // Si la página solicitada es la página actual, se obtiene la url actual
+          path = this.actual
         } else {
           // Si la página solicitada es una página siguiente, se obtiene la siguiente url
           path = this.next
@@ -252,7 +256,7 @@ export default {
                 .delete('/product', { data : this.data})
                 .then(response => {
                   Swal.fire('Producto eliminado', '', 'success')
-                  this.getProducts()
+                  this.getProducts({pagination: this.pagination})
                 })
                 .catch(error => {
                   Swal.fire('El producto no ha sido eliminado', error.response.data.error, 'error')

@@ -94,6 +94,7 @@ export default {
       // Urls para controlar la paginación
       next: '/kardex/?limit=5&offset=0',
       previous: null,
+      actual: '/kardex/?limit=5&offset=0',
 
       // Campos de la tabla
       fields: [
@@ -165,13 +166,16 @@ export default {
       // Variable que llevará el endpoint
       let path = ''
 
-      // Si hay un nuevo limit, se concaneta este limit nuevo a la url
+       // Si hay un nuevo limit, se concaneta este limit nuevo a la url
       if(rowsPerPage != this.pagination.rowsPerPage) {
-        path = `/kardex/?limit=${rowsPerPage}&offset=0`
+        path = `/category/?limit=${rowsPerPage}&offset=0`
       } else {
         // Si la página solicitada es una página anterior, se obtiene la url previa
         if(page < this.pagination.page) {
           path = this.previous
+        } else if(page === this.pagination.page){
+          // Si la página solicitada es la página actual, se obtiene la url actual
+          path = this.actual
         } else {
           // Si la página solicitada es una página siguiente, se obtiene la siguiente url
           path = this.next
@@ -213,7 +217,7 @@ export default {
             Swal.fire('Transacción creada', '', 'success')
             this.clean()
             this.create = false
-            this.getKardex()
+            this.getKardex({pagination: this.pagination})
           })
           .catch(error => {
             Swal.fire('La transacción no ha sido creada', error.response.data.error, 'error')

@@ -64,6 +64,7 @@ export default {
       // Urls para controlar la paginación
       next: '/category/?limit=5&offset=0',
       previous: null,
+      actual: '/category/?limit=5&offset=0',
 
       // Campos de la tabla
       fields: [
@@ -120,6 +121,9 @@ export default {
         // Si la página solicitada es una página anterior, se obtiene la url previa
         if(page < this.pagination.page) {
           path = this.previous
+        } else if(page === this.pagination.page){
+          // Si la página solicitada es la página actual, se obtiene la url actual
+          path = this.actual
         } else {
           // Si la página solicitada es una página siguiente, se obtiene la siguiente url
           path = this.next
@@ -135,6 +139,7 @@ export default {
           this.cats = response.data.results
           this.next = response.data.next
           this.previous = response.data.previous
+          this.actual = path
 
           // Se actualiza la paginación de la tabla
           this.pagination.page = page
@@ -158,7 +163,7 @@ export default {
           .then(response => {
             Swal.fire('Categoría creada', '', 'success')
             this.clean()
-            this.getCategories()
+            this.getCategories({pagination: this.pagination})
           })
           .catch(error => {
             Swal.fire('La categoría no ha sido creada', error.response.data.error, 'error')
@@ -178,7 +183,7 @@ export default {
           .put('/category', this.data)
           .then(response => {
             Swal.fire('Categoría actualizada', '', 'success')
-            this.getCategories()
+            this.getCategories({pagination: this.pagination})
           })
           .catch(error => {
             Swal.fire('La categoría no ha sido actualizada', error.response.data.error, 'error')
@@ -203,7 +208,7 @@ export default {
                 .then(response => {
                   Swal.fire('Categoría eliminada', '', 'success')
                   this.clean();
-                  this.getCategories()
+                  this.getCategories({pagination: this.pagination})
                 })
                 .catch(error => {
                   Swal.fire('La categoría no ha sido eliminada', error.response.data.error, 'error')
