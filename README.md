@@ -1,0 +1,1 @@
+# KardexApp_frontend
